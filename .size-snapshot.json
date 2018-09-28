@@ -1,18 +1,18 @@
 {
   "dist/superfly.js": {
-    "bundled": 15790,
+    "bundled": 15927,
     "minified": 5935,
-    "gzipped": 2096
+    "gzipped": 2100
   },
   "dist/superfly.min.js": {
-    "bundled": 15790,
+    "bundled": 15927,
     "minified": 5935,
-    "gzipped": 2096
+    "gzipped": 2100
   },
   "dist/superfly.es.js": {
-    "bundled": 13113,
-    "minified": 6110,
-    "gzipped": 1899,
+    "bundled": 13271,
+    "minified": 5840,
+    "gzipped": 1830,
     "treeshaked": {
       "rollup": {
         "code": 0,

@@ -14,10 +14,10 @@ import pure from './pure';
 import { reconciler } from './reconcile';
 
 const render = jest.fn((prev, next) => next);
-const reconcile = reconciler(render);
 
 describe('reconciler - vdom', () => {
   it('should produce patches for rendering from zero', () => {
+    const reconcile = reconciler(render);
     const element = <main>Hello, world</main>;
 
     const patches = reconcile(null, element);
@@ -29,6 +29,7 @@ describe('reconciler - vdom', () => {
   });
 
   it('should remove old node and produce new one on node type mismatch', () => {
+    const reconcile = reconciler(render);
     const prev = <div>Hello, world</div>;
     const next = <main>Hello, world</main>;
 
@@ -72,6 +73,7 @@ describe('reconciler - vdom', () => {
   });
 
   it('should remove node that is no longer present', () => {
+    const reconcile = reconciler(render);
     const prev = (
       <ul>
         <li>Hello</li>
@@ -107,6 +109,7 @@ describe('reconciler - vdom', () => {
   });
 
   it('should add new node', () => {
+    const reconcile = reconciler(render);
     const prev = (
       <ul>
         <li>Hello</li>
@@ -145,6 +148,7 @@ describe('reconciler - vdom', () => {
   });
 
   it('should generate patch-list for node attributes', () => {
+    const reconcile = reconciler(render);
     const prev = <div id="1" lang="en" />;
     const next = <div class="class" lang="pt" />;
 
@@ -174,6 +178,7 @@ describe('reconciler - vdom', () => {
   });
 
   it('should handle updating text value for text node', () => {
+    const reconcile = reconciler(render);
     const prev = <span>old value</span>;
     const next = <span>new value</span>;
 
@@ -189,6 +194,7 @@ describe('reconciler - vdom', () => {
   });
 
   it('should handle adding components', () => {
+    const reconcile = reconciler(render);
     function Component({ prop }) {
       return <span>{prop}</span>;
     }
@@ -216,12 +222,14 @@ describe('reconciler - vdom', () => {
   });
 
   it('should handle updating components', () => {
+    const reconcile = reconciler(render);
     function Component({ prop }) {
       return <span>{prop}</span>;
     }
     const prev = <Component prop="1" />;
     const next = <Component prop="2" />;
 
+    reconcile(null, prev);
     const patches = reconcile(prev, next);
     expect(patches).toHaveLength(1);
 
@@ -235,6 +243,7 @@ describe('reconciler - vdom', () => {
   });
 
   it('should handle nested components', () => {
+    const reconcile = reconciler(render);
     function AnotherComponent({ children }) {
       return <span>{children}</span>;
     }
@@ -256,6 +265,7 @@ describe('reconciler - vdom', () => {
   });
 
   it('should handle conditional rendering', () => {
+    const reconcile = reconciler(render);
     function Component({ isShown }) {
       return (
         <ul>
@@ -268,6 +278,7 @@ describe('reconciler - vdom', () => {
     const prev = <Component isShown={false} />;
     const next = <Component isShown />;
 
+    reconcile(null, prev);
     const patches = reconcile(prev, next);
 
     expect(patches).toHaveLength(5);
@@ -323,6 +334,7 @@ describe('reconciler - vdom', () => {
   });
 
   it('should handle pure components', () => {
+    const reconcile = reconciler(render);
     const Component = jest.fn(({ a, b }) => {
       return (
         <span>
@@ -338,6 +350,7 @@ describe('reconciler - vdom', () => {
     const prev = <PureComponent a={1} b={2} />;
     const next = <PureComponent a={1} b={3} />;
 
+    reconcile(null, prev);
     const patches = reconcile(prev, next);
     expect(comparator).toReturnWith(true);
     expect(Component).not.toBeCalled();
@@ -347,6 +360,7 @@ describe('reconciler - vdom', () => {
 
 describe('reconciler - lifecycle', () => {
   it('should produce lifecycle patches for node creation', () => {
+    const reconcile = reconciler(render);
     const element = (
       <main beforecreate={jest.fn} created={jest.fn}>
         Hello, world
@@ -363,6 +377,7 @@ describe('reconciler - lifecycle', () => {
   });
 
   it('should produce lifecycle patches for node update', () => {
+    const reconcile = reconciler(render);
     const prev = <div class="class" beforeupdate={jest.fn} updated={jest.fn} />;
     const next = <div id="id" beforeupdate={jest.fn} updated={jest.fn} />;
 
@@ -376,6 +391,7 @@ describe('reconciler - lifecycle', () => {
   });
 
   it('should produce lifecycle patches for node removal', () => {
+    const reconcile = reconciler(render);
     const component = (
       <div id="id" beforedestroy={jest.fn} destroyed={jest.fn} />
     );

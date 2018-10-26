@@ -78,6 +78,8 @@ export function reconcileAttrs(prevNode, nextNode, id) {
 }
 
 export function reconciler(render) {
+  const instances = {};
+
   return function reconcile(prevNode, nextNode, id = '0') {
     let patches = [];
 
@@ -124,6 +126,8 @@ export function reconciler(render) {
           merge({}, nextNode.attrs, nextNode.state, nextNode.handlers),
         );
 
+        instances[id] = nextNode;
+
         const matroskaPatches = reconcile(null, nextNode, id);
         Array.prototype.push.apply(patches, matroskaPatches);
       } else {
@@ -162,7 +166,7 @@ export function reconciler(render) {
         ) {
           const component = nextNode;
           nextNode = nextNode.nodeName(nextNode.attrs);
-          prevNode = prevNode.nodeName(prevNode.attrs);
+          prevNode = instances[id];
 
           const componentPatches = reconcile(prevNode, nextNode, id);
           if (componentPatches.length > 0) {
@@ -192,9 +196,7 @@ export function reconciler(render) {
           nextNode = nextNode.nodeName(
             merge({}, nextNode.attrs, nextNode.state, nextNode.handlers),
           );
-          prevNode = prevNode.nodeName(
-            merge({}, prevNode.attrs, prevNode.state, prevNode.handlers),
-          );
+          prevNode = instances[id];
 
           const stateComponentPatches = reconcile(prevNode, nextNode, id);
           Array.prototype.push.apply(patches, stateComponentPatches);
@@ -243,10 +245,12 @@ export function reconciler(render) {
       }
     } else if (prevNode && !nextNode) {
       if (prevNode.type === COMPONENT_NODE || prevNode.type === STATEFUL_NODE) {
-        prevNode = prevNode.nodeName(prevNode.attrs);
+        prevNode = instances[id];
 
         const matroskaPatches = reconcile(prevNode, null, id);
         Array.prototype.push.apply(patches, matroskaPatches);
+
+        delete instances[id];
       } else {
         if (prevNode.lifecycle.beforedestroy) {
           patches.push({

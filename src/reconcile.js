@@ -236,10 +236,49 @@ export function reconciler(render) {
           }
         }
       } else {
+        const removePatches = reconcile(prevNode, null, id);
+        Array.prototype.push.apply(patches, removePatches);
+        const addPatches = reconcile(null, nextNode, id);
+        Array.prototype.push.apply(patches, addPatches);
+      }
+    } else if (prevNode && !nextNode) {
+      if (prevNode.type === COMPONENT_NODE || prevNode.type === STATEFUL_NODE) {
+        prevNode = prevNode.nodeName(prevNode.attrs);
+
+        const matroskaPatches = reconcile(prevNode, null, id);
+        Array.prototype.push.apply(patches, matroskaPatches);
+      } else {
         if (prevNode.lifecycle.beforedestroy) {
           patches.push({
             type: LIFECYCLE,
             hook: 'beforedestroy',
+            node: prevNode,
+            id,
+          });
+        }
+
+        const childrenPatches = [];
+        for (let i = 0; i < prevNode.attrs.children.length; i += 1) {
+          const childPatches = reconcile(
+            prevNode.attrs.children[i],
+            null,
+            `${id}.${i}`,
+          );
+          Array.prototype.push.apply(childrenPatches, childPatches);
+        }
+        if (childrenPatches.length > 0 && prevNode.lifecycle.beforeupdate) {
+          childrenPatches.unshift({
+            type: LIFECYCLE,
+            hook: 'beforedestroy',
+            node: prevNode,
+            id,
+          });
+        }
+        Array.prototype.push.apply(patches, childrenPatches);
+        if (childrenPatches.length > 0 && prevNode.lifecycle.updated) {
+          childrenPatches.push({
+            type: LIFECYCLE,
+            hook: 'destroyed',
             node: prevNode,
             id,
           });
@@ -253,27 +292,6 @@ export function reconciler(render) {
             id,
           });
         }
-
-        const addPatches = reconcile(null, nextNode, id);
-        Array.prototype.push.apply(patches, addPatches);
-      }
-    } else if (prevNode && !nextNode) {
-      if (prevNode.lifecycle.beforedestroy) {
-        patches.push({
-          type: LIFECYCLE,
-          hook: 'beforedestroy',
-          node: prevNode,
-          id,
-        });
-      }
-      patches.push({ type: REMOVE_NODE, node: prevNode, id });
-      if (prevNode.lifecycle.destroyed) {
-        patches.push({
-          type: LIFECYCLE,
-          hook: 'destroyed',
-          node: prevNode,
-          id,
-        });
       }
     }
 

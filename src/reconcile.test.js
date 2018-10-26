@@ -34,8 +34,17 @@ describe('reconciler - vdom', () => {
 
     const patches = reconcile(prev, next);
 
-    expect(patches).toHaveLength(3);
+    expect(patches).toHaveLength(4);
     expect(patches[0]).toEqual(
+      expect.objectContaining({
+        type: REMOVE_NODE,
+        node: expect.objectContaining({
+          type: TEXT_NODE,
+        }),
+      }),
+    );
+
+    expect(patches[1]).toEqual(
       expect.objectContaining({
         type: REMOVE_NODE,
         node: expect.objectContaining({
@@ -44,7 +53,7 @@ describe('reconciler - vdom', () => {
       }),
     );
 
-    expect(patches[1]).toEqual(
+    expect(patches[2]).toEqual(
       expect.objectContaining({
         type: ADD_NODE,
         node: expect.objectContaining({
@@ -52,7 +61,7 @@ describe('reconciler - vdom', () => {
         }),
       }),
     );
-    expect(patches[2]).toEqual(
+    expect(patches[3]).toEqual(
       expect.objectContaining({
         type: ADD_NODE,
         node: expect.objectContaining({
@@ -78,8 +87,16 @@ describe('reconciler - vdom', () => {
 
     const patches = reconcile(prev, next);
 
-    expect(patches).toHaveLength(1);
+    expect(patches).toHaveLength(2);
     expect(patches[0]).toEqual(
+      expect.objectContaining({
+        type: REMOVE_NODE,
+        node: expect.objectContaining({
+          type: TEXT_NODE,
+        }),
+      }),
+    );
+    expect(patches[1]).toEqual(
       expect.objectContaining({
         type: REMOVE_NODE,
         node: expect.objectContaining({
@@ -253,7 +270,7 @@ describe('reconciler - vdom', () => {
 
     const patches = reconcile(prev, next);
 
-    expect(patches).toHaveLength(4);
+    expect(patches).toHaveLength(5);
     expect(patches[0]).toEqual(
       expect.objectContaining({
         type: UPDATE_ATTR,
@@ -275,11 +292,19 @@ describe('reconciler - vdom', () => {
       expect.objectContaining({
         type: REMOVE_NODE,
         node: expect.objectContaining({
-          nodeName: 'li',
+          type: TEXT_NODE,
         }),
       }),
     );
     expect(patches[2]).toEqual(
+      expect.objectContaining({
+        type: REMOVE_NODE,
+        node: expect.objectContaining({
+          nodeName: 'li',
+        }),
+      }),
+    );
+    expect(patches[3]).toEqual(
       expect.objectContaining({
         type: ADD_NODE,
         node: expect.objectContaining({
@@ -287,7 +312,7 @@ describe('reconciler - vdom', () => {
         }),
       }),
     );
-    expect(patches[3]).toEqual(
+    expect(patches[4]).toEqual(
       expect.objectContaining({
         type: ADD_NODE,
         node: expect.objectContaining({
